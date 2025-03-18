@@ -1,4 +1,3 @@
-
 // Global variables
 const currentFlashcardIndex = 0;
 
@@ -43,6 +42,3 @@ async function generateFlashcard(): Promise<void> {
     console.log('Error Fetching AI Response:', error);
   }
 }
-
-
-So if I add all this can I push?
