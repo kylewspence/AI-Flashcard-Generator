@@ -1,0 +1,39 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90%; /* Use most of the screen width, but leave space */
+  max-width: 800px; /* Prevent it from becoming too wide */
+  margin: 0 auto; /* Center it horizontally */
+  padding: 20px; /* Space from edges */
+}
+
+main {
+  width: 100%;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+  margin: auto;
+}
+
+header {
+  width: 100%;
+}
+
+/* Mobile View: Adjust Layout */
+@media (width <= 768px) {
+  body {
+    width: 95%; /* Use more of the screen on mobile */
+    padding: 10px;
+  }
+
+  .nav-btn {
+    width: 100%; /* Full width on mobile */
+  }
+
+  /* Adjust flashcard layout */
+  .flashcard-container {
+    max-width: 100%; /* Use the full width */
+  }
+}

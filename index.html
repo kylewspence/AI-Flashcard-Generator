@@ -1,20 +1,55 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AJAX Project</title>
-  <link rel="icon" href="images/favicon.ico">
-  <link rel="stylesheet" href="css/reset.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-  <header>
-  </header>
-  <main>
-  </main>
-  <script src="js/data.js"></script>
-  <script src="js/main.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AJAX Project</title>
+    <link rel="icon" href="images/favicon.ico" />
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header class="nav-container">
+      <button id="study-mode-btn" class="nav-btn">😊 Study Mode</button>
+      <button id="generate-btn" class="nav-btn active">🌍 Generate</button>
+      <button id="edit-deck-btn" class="nav-btn">✏️ Edit Deck</button>
+    </header>
+    <main>
+      <div class="input-container">
+        <input
+          type="text"
+          id="user-input"
+          class="input-box"
+          placeholder="Generate New" />
+        <button id="search-btn" class="btn">Submit</button>
+      </div>
+
+      <div class="flashcard-container">
+        <div class="flashcard">
+          <p class="flashcard-title">First Card</p>
+          <p class="flashcard-content" id="flashcard-content">
+            Genereated Card Information.
+          </p>
+          <div class="flashcard-buttons">
+            <button class="edit-btn">Edit</button>
+            <button class="save-btn">Save</button>
+          </div>
+        </div>
+      </div>
+      <div id="saved-flashcards-container">
+        <details class="saved-flashcard">
+          <summary class="flashcard-summary">First Card</summary>
+          <p>Generated Card Information</p>
+        </details>
+
+        <details class="saved-flashcard">
+          <summary class="flashcard-summary">Second Card</summary>
+          <p>More flashcard content...</p>
+        </details>
+      </div>
+    </main>
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+  </body>
 </html>
