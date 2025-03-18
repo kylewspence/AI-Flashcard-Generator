@@ -1,7 +1,9 @@
 import { API_KEY } from './config';
 
+// Global variables
 const currentFlashcardIndex = 0;
 
+// Dom Cache
 const $generateBtn = document.getElementById(
   'generate-btn',
 ) as HTMLButtonElement;
@@ -11,6 +13,7 @@ const flashcardContainer = document.getElementById(
   'flashcard-container',
 ) as HTMLElement;
 
+// Fetch
 async function generateFlashcard(): Promise<void> {
   const userInput = $inputField.value;
   if (!userInput) {
