@@ -1,3 +1,4 @@
+import { API_KEY } from './config';
 // Global variables
 const currentFlashcardIndex = 0;
 
@@ -26,7 +27,7 @@ async function generateFlashcard(): Promise<void> {
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
-        Authorization: `Bearer`,
+        Authorization: `Bearer ${API_KEY}`,
       },
       body: JSON.stringify({
         model: 'gpt-3.5-turbo',
