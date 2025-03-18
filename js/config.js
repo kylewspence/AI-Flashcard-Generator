@@ -1,1 +1,0 @@
-export const API_KEY = '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';
