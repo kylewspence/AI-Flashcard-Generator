@@ -4,7 +4,7 @@
   justify-content: center;
   padding: 20px;
   border-radius: 10px;
-  max-width: 675px;
+  max-width: 800px;
 }
 
 .nav-btn {
@@ -36,10 +36,10 @@
   gap: 10px;
   margin: 20px 0;
   width: 100%;
-  max-width: 500px;
+  max-width: 800px;
 }
 
-/* Input Container */
+/* Generate */
 .input-box {
   padding: 10px;
   border: 2px solid #ccc;
@@ -67,7 +67,7 @@
 .flashcard-container {
   margin-top: 20px;
   width: 100%;
-  max-width: 500px;
+  max-width: 800px;
   background: white;
   padding: 15px;
   border-radius: 10px;
@@ -95,9 +95,9 @@
   margin-top: 15px;
 }
 
-/* Styling for Edit & Save Buttons */
 .edit-btn,
-.save-btn {
+.save-btn,
+.add-btn {
   background-color: #5e4db2;
   color: white;
   border: none;
@@ -108,18 +108,31 @@
 }
 
 .edit-btn:hover,
-.save-btn:hover {
+.save-btn:hover,
+.add-btn:hover {
   background-color: #4a3c91;
 }
 
-/* Collapsible Section Styling */
+.hidden {
+  display: none;
+}
 
+.edit-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+/* Moved these items to Issue #3 saving for now */
 #saved-flashcards-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
 }
 
 .saved-flashcard {
@@ -130,7 +143,7 @@
   border: 1px solid #ddd;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 500px;
+  max-width: 800px;
 }
 
 .flashcard-summary {
@@ -158,7 +171,6 @@ details[open] .flashcard-summary::after {
   color: #333;
 }
 
-/* Make Collapsed Sections Consistent */
 details {
   border-radius: 8px;
   transition: all 0.3s ease;
