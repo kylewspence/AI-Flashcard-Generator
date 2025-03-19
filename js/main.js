@@ -4,15 +4,11 @@ const key1 = 'sk-proj-7vyDO4PFulA9RzJM_KxUIZtVTUOmdlNR7Oy8D';
 const key2 = 'q1a8rQtNWWnRJ3rRtrmGJu808dnJveOjer0dVT3BlbkFJI';
 const key3 = 'uqxWfNJ9rai7axHkcNhLUvJVSW1f-pksYl4jIt8Dvq9eeFM';
 const key4 = 'vzFw4qYu-CcieFlcaznL-43CIA';
-// Global Variables
-const currentFlashcardIndex = 0;
 // DOM Cache
 const $generateBtn = document.getElementById('search-btn');
 const $inputField = document.getElementById('user-input');
-const $flashcardContainers = document.querySelectorAll('.flashcard');
 // Generate Listener
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('JavaScript Loaded!');
   $generateBtn?.addEventListener('click', generateFlashcard);
 });
 // Clicks
@@ -24,7 +20,6 @@ document.addEventListener('click', (event) => {
 });
 // Edit Button
 function handleEdit(target) {
-  console.log('Edit button clicked!');
   const $flashcard = target.closest('.flashcard');
   if (!$flashcard) return;
   const $questionElem = $flashcard.querySelector('.flashcard-title');
@@ -38,9 +33,9 @@ function handleEdit(target) {
   $answerElem.classList.add('hidden');
   $editQuestionInput.classList.remove('hidden');
   $editAnswerInput.classList.remove('hidden');
-  target.classList.add('hidden'); // Hide Edit button
-  $saveEditBtn.classList.remove('hidden'); // Show Save button
-  $addToDeckBtn.classList.add('hidden'); // Hide Add to Deck button
+  target.classList.add('hidden');
+  $saveEditBtn.classList.remove('hidden');
+  $addToDeckBtn.classList.add('hidden');
   // Prefill inputs
   $editQuestionInput.value = $questionElem.innerText;
   $editAnswerInput.value = $answerElem.innerText;
@@ -51,7 +46,6 @@ function handleEdit(target) {
 }
 // Save Button
 function handleSave(target) {
-  console.log('Save button clicked!');
   const $flashcard = target.closest('.flashcard');
   if (!$flashcard) return;
   const $questionElem = $flashcard.querySelector('.flashcard-title');
@@ -68,43 +62,29 @@ function handleSave(target) {
   $answerElem.classList.remove('hidden');
   $editQuestionInput.classList.add('hidden');
   $editAnswerInput.classList.add('hidden');
-  target.classList.add('hidden'); // Hide Save button
-  $editBtn.classList.remove('hidden'); // Show Edit button
-  $addToDeckBtn.classList.remove('hidden'); // Show Add to Deck button
-  console.log('Flashcard updated:', {
-    question: $editQuestionInput.value,
-    answer: $editAnswerInput.value,
-  });
+  target.classList.add('hidden');
+  $editBtn.classList.remove('hidden');
+  $addToDeckBtn.classList.remove('hidden');
 }
 // Add To Deck Button
 function handleAddToDeck(target) {
-  console.log('Add to Deck button clicked!');
   const $flashcard = target.closest('.flashcard');
-  if (!$flashcard) return;
+  if (!$flashcard) throw new Error('No Flash Card');
   const $question = $flashcard.querySelector('.flashcard-title');
   const $answer = $flashcard.querySelector('.flashcard-content');
-  if (!$question || !$answer) {
-    console.error('Could not find question or answer elements');
-    return;
-  }
+  if (!$question || !$answer)
+    throw new Error('Could not find either question or answer.');
   // Retrieve existing deck or initialize
   const savedDeck = JSON.parse(localStorage.getItem('flashcards') || '[]');
   // Add new card
   savedDeck.push({ question: $question.innerText, answer: $answer.innerText });
   // Save back to localStorage
   localStorage.setItem('flashcards', JSON.stringify(savedDeck));
-  console.log('Flashcard added to deck:', {
-    question: $question.innerText,
-    answer: $answer.innerText,
-  });
 }
 // Fetch, API, Prompt
 async function generateFlashcard() {
   const userInput = $inputField.value;
-  if (!userInput) {
-    console.log('Please enter a topic!');
-    return;
-  }
+  if (!userInput) throw new Error(`No User Input`);
   const prompt = `Generate exactly 3 unique flashcards about: "${userInput}".
 Each flashcard should cover a different aspect of the topic.
 For instance, this will mostly be used for generating flash cards about concepts relating to coding.
@@ -147,9 +127,7 @@ Make the answers more robust, but not super technical.
       }),
     });
     const data = await response.json();
-    console.log('API Response:', data);
     const flashcards = JSON.parse(data.choices[0].message.content);
-    console.log('Generated Flashcards:', flashcards);
     flashcards.forEach((flashcard, index) => {
       const $flashcard = document.querySelector(
         `.flashcard[data-index="${index}"]`,
@@ -162,6 +140,6 @@ Make the answers more robust, but not super technical.
       }
     });
   } catch (error) {
-    console.log('Error Fetching AI Response:', error);
+    throw new Error(`Error Fetching AI Response: ${error}`);
   }
 }
