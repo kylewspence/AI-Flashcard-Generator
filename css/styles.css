@@ -1,0 +1,181 @@
+/* Nav Container */
+.nav-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 800px;
+}
+
+.nav-btn {
+  border: none;
+  background: rgb(236, 229, 239);
+  padding: 20px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 30%;
+  box-shadow: 2px 4px 6px;
+}
+
+.nav-btn:hover {
+  background: #b48aff;
+}
+
+.nav-btn.active {
+  border: none;
+  background: rgb(208, 187, 254);
+  box-shadow: 2px 4px 6px;
+}
+
+.input-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+  width: 100%;
+  max-width: 800px;
+}
+
+/* Generate */
+.input-box {
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  flex-grow: 1;
+  width: 100%;
+}
+
+.btn {
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 10px 15px;
+}
+
+.btn:hover {
+  background-color: #4a3c91;
+}
+
+/* Adjust Flashcard Spacing & Design */
+.flashcard-container {
+  margin-top: 20px;
+  width: 100%;
+  max-width: 800px;
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  border: 2px solid #ccc;
+  text-align: left;
+}
+
+.flashcard-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.flashcard-content {
+  margin-top: 5px;
+  font-size: 16px;
+  color: #666;
+}
+
+.flashcard-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.edit-btn,
+.save-btn,
+.add-btn {
+  background-color: #5e4db2;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.edit-btn:hover,
+.save-btn:hover,
+.add-btn:hover {
+  background-color: #4a3c91;
+}
+
+.hidden {
+  display: none;
+}
+
+.edit-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+/* Moved these items to Issue #3 saving for now */
+#saved-flashcards-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+}
+
+.saved-flashcard {
+  background: #fff;
+  border-radius: 10px;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ddd;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 800px;
+}
+
+.flashcard-summary {
+  padding: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flashcard-summary::after {
+  content: '▼';
+}
+
+details[open] .flashcard-summary::after {
+  content: '▲';
+}
+
+.saved-flashcard p {
+  margin: 10px 0;
+  padding: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+details {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+details[open] {
+  padding-bottom: 10px;
+}

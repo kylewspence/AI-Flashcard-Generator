@@ -1,52 +1,33 @@
+'use strict';
 // API Key Variables
 const key1 = 'sk-proj-7vyDO4PFulA9RzJM_KxUIZtVTUOmdlNR7Oy8D';
 const key2 = 'q1a8rQtNWWnRJ3rRtrmGJu808dnJveOjer0dVT3BlbkFJI';
 const key3 = 'uqxWfNJ9rai7axHkcNhLUvJVSW1f-pksYl4jIt8Dvq9eeFM';
 const key4 = 'vzFw4qYu-CcieFlcaznL-43CIA';
-
 // DOM Cache
-const $generateBtn = document.getElementById('search-btn') as HTMLButtonElement;
-const $inputField = document.getElementById('user-input') as HTMLInputElement;
-
+const $generateBtn = document.getElementById('search-btn');
+const $inputField = document.getElementById('user-input');
 // Generate Listener
 document.addEventListener('DOMContentLoaded', () => {
   $generateBtn?.addEventListener('click', generateFlashcard);
 });
-
 // Clicks
 document.addEventListener('click', (event) => {
-  const target = event.target as HTMLElement;
-
+  const target = event.target;
   if (target.classList.contains('edit-btn')) handleEdit(target);
   if (target.classList.contains('save-btn')) handleSave(target);
   if (target.classList.contains('add-btn')) handleAddToDeck(target);
 });
-
 // Edit Button
-
-function handleEdit(target: HTMLElement): void {
-  const $flashcard = target.closest('.flashcard') as HTMLElement;
+function handleEdit(target) {
+  const $flashcard = target.closest('.flashcard');
   if (!$flashcard) return;
-
-  const $questionElem = $flashcard.querySelector(
-    '.flashcard-title',
-  ) as HTMLElement;
-  const $answerElem = $flashcard.querySelector(
-    '.flashcard-content',
-  ) as HTMLElement;
-  const $editQuestionInput = $flashcard.querySelector(
-    '.edit-question',
-  ) as HTMLInputElement;
-  const $editAnswerInput = $flashcard.querySelector(
-    '.edit-answer',
-  ) as HTMLInputElement;
-  const $saveEditBtn = $flashcard.querySelector(
-    '.save-btn',
-  ) as HTMLButtonElement;
-  const $addToDeckBtn = $flashcard.querySelector(
-    '.add-btn',
-  ) as HTMLButtonElement;
-
+  const $questionElem = $flashcard.querySelector('.flashcard-title');
+  const $answerElem = $flashcard.querySelector('.flashcard-content');
+  const $editQuestionInput = $flashcard.querySelector('.edit-question');
+  const $editAnswerInput = $flashcard.querySelector('.edit-answer');
+  const $saveEditBtn = $flashcard.querySelector('.save-btn');
+  const $addToDeckBtn = $flashcard.querySelector('.add-btn');
   // Toggle hidden
   $questionElem.classList.add('hidden');
   $answerElem.classList.add('hidden');
@@ -55,44 +36,27 @@ function handleEdit(target: HTMLElement): void {
   target.classList.add('hidden');
   $saveEditBtn.classList.remove('hidden');
   $addToDeckBtn.classList.add('hidden');
-
   // Prefill inputs
   $editQuestionInput.value = $questionElem.innerText;
   $editAnswerInput.value = $answerElem.innerText;
-
   // Expand Input Boxes
   $editQuestionInput.style.width = '100%';
   $editAnswerInput.style.width = '100%';
   $editAnswerInput.style.height = '80px';
 }
-
 // Save Button
-
-function handleSave(target: HTMLElement): void {
-  const $flashcard = target.closest('.flashcard') as HTMLElement;
+function handleSave(target) {
+  const $flashcard = target.closest('.flashcard');
   if (!$flashcard) return;
-
-  const $questionElem = $flashcard.querySelector(
-    '.flashcard-title',
-  ) as HTMLElement;
-  const $answerElem = $flashcard.querySelector(
-    '.flashcard-content',
-  ) as HTMLElement;
-  const $editQuestionInput = $flashcard.querySelector(
-    '.edit-question',
-  ) as HTMLInputElement;
-  const $editAnswerInput = $flashcard.querySelector(
-    '.edit-answer',
-  ) as HTMLInputElement;
-  const $editBtn = $flashcard.querySelector('.edit-btn') as HTMLButtonElement;
-  const $addToDeckBtn = $flashcard.querySelector(
-    '.add-btn',
-  ) as HTMLButtonElement;
-
+  const $questionElem = $flashcard.querySelector('.flashcard-title');
+  const $answerElem = $flashcard.querySelector('.flashcard-content');
+  const $editQuestionInput = $flashcard.querySelector('.edit-question');
+  const $editAnswerInput = $flashcard.querySelector('.edit-answer');
+  const $editBtn = $flashcard.querySelector('.edit-btn');
+  const $addToDeckBtn = $flashcard.querySelector('.add-btn');
   // Save new values
   $questionElem.innerText = $editQuestionInput.value;
   $answerElem.innerText = $editAnswerInput.value;
-
   // Toggle visibility back
   $questionElem.classList.remove('hidden');
   $answerElem.classList.remove('hidden');
@@ -102,35 +66,25 @@ function handleSave(target: HTMLElement): void {
   $editBtn.classList.remove('hidden');
   $addToDeckBtn.classList.remove('hidden');
 }
-
 // Add To Deck Button
-
-function handleAddToDeck(target: HTMLElement): void {
-  const $flashcard = target.closest('.flashcard') as HTMLElement;
+function handleAddToDeck(target) {
+  const $flashcard = target.closest('.flashcard');
   if (!$flashcard) throw new Error('No Flash Card');
-
-  const $question = $flashcard.querySelector('.flashcard-title') as HTMLElement;
-  const $answer = $flashcard.querySelector('.flashcard-content') as HTMLElement;
-
+  const $question = $flashcard.querySelector('.flashcard-title');
+  const $answer = $flashcard.querySelector('.flashcard-content');
   if (!$question || !$answer)
     throw new Error('Could not find either question or answer.');
-
   // Retrieve existing deck or initialize
   const savedDeck = JSON.parse(localStorage.getItem('flashcards') || '[]');
-
   // Add new card
   savedDeck.push({ question: $question.innerText, answer: $answer.innerText });
-
   // Save back to localStorage
   localStorage.setItem('flashcards', JSON.stringify(savedDeck));
 }
-
 // Fetch, API, Prompt
-
-async function generateFlashcard(): Promise<void> {
+async function generateFlashcard() {
   const userInput = $inputField.value;
   if (!userInput) throw new Error(`No User Input`);
-
   const prompt = `Generate exactly 3 unique flashcards about: "${userInput}".
 Each flashcard should cover a different aspect of the topic.
 For instance, this will mostly be used for generating flash cards about concepts relating to coding.
@@ -158,7 +112,6 @@ Make the answers more robust, but not super technical.
      "answer":
    }
  ]`;
-
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -173,24 +126,15 @@ Make the answers more robust, but not super technical.
         max_tokens: 600,
       }),
     });
-
     const data = await response.json();
-
     const flashcards = JSON.parse(data.choices[0].message.content);
-
-    flashcards.forEach((flashcard: Flashcard, index: number) => {
+    flashcards.forEach((flashcard, index) => {
       const $flashcard = document.querySelector(
         `.flashcard[data-index="${index}"]`,
-      ) as HTMLElement;
-
+      );
       if ($flashcard) {
-        const $questionElem = $flashcard.querySelector(
-          '.flashcard-title',
-        ) as HTMLElement;
-        const $answerElem = $flashcard.querySelector(
-          '.flashcard-content',
-        ) as HTMLElement;
-
+        const $questionElem = $flashcard.querySelector('.flashcard-title');
+        const $answerElem = $flashcard.querySelector('.flashcard-content');
         $questionElem.innerText = flashcard.question;
         $answerElem.innerText = flashcard.answer;
       }

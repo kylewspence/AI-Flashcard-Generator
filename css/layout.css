@@ -1,0 +1,41 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+main {
+  width: 100%;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: auto;
+}
+
+header {
+  width: 100%;
+}
+
+@media (width <= 768px) {
+  body {
+    width: 95%;
+    padding: 10px;
+  }
+
+  .nav-btn {
+    width: 100%;
+  }
+
+  .flashcard-container {
+    max-width: 100%;
+  }
+}
+
+.hidden {
+  display: none;
+}
