@@ -64,10 +64,14 @@
 }
 
 /* Adjust Flashcard Spacing & Design */
+
+.flashcard-gen-box {
+  max-width: 800px;
+  width: 100%;
+}
+
 .flashcard-container {
   margin-top: 20px;
-  width: 100%;
-  max-width: 800px;
   background: white;
   padding: 15px;
   border-radius: 10px;
@@ -107,9 +111,20 @@
   font-size: 14px;
 }
 
+#show-answer-btn {
+  margin-right: 1rem;
+  background-color: #5e4db2;
+}
+
+#next-btn {
+  background-color: #5e4db2;
+}
+
 .edit-btn:hover,
 .save-btn:hover,
-.add-btn:hover {
+.add-btn:hover,
+#show-answer-btn:hover,
+#next-btn:hover {
   background-color: #4a3c91;
 }
 
@@ -126,7 +141,13 @@
   margin-top: 5px;
 }
 
-/* Moved these items to Issue #3 saving for now */
+.study-mode-btns {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+/* Moved these items to Issue #2 saving for now */
 #saved-flashcards-container {
   display: flex;
   flex-direction: column;

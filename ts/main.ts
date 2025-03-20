@@ -22,6 +22,18 @@ document.addEventListener('click', (event) => {
   if (target.classList.contains('add-btn')) handleAddToDeck(target);
 });
 
+// Nav Buttons
+
+function setActiveNavButton(activeButtonId: string): void {
+  // Remove 'active' from all nav buttons
+  document.querySelectorAll('.nav-btn').forEach((btn) => {
+    btn.classList.remove('active');
+  });
+
+  // Add 'active' to the clicked button
+  document.getElementById(activeButtonId)?.classList.add('active');
+}
+
 // Edit Button
 
 function handleEdit(target: HTMLElement): void {
@@ -140,6 +152,15 @@ Please consider the use of flash cards and how a human would hold a paper card w
 Make the answers more robust, but not super technical.
 
 ⚠️ IMPORTANT:
+ - If the answer includes code, format it clearly with line breaks.
+ - Example of correct formatting:
+
+   Question: "How do you use forEach in JavaScript?"
+   Answer:
+   let numbers = [1, 2, 3, 4, 5];
+   numbers.forEach(function(number) {
+       console.log(number);
+   });
  - DO NOT include any explanations, pretext, or extra text.
  - ONLY return a JSON array with this format - you can use your own judgment for
    the questions and answers as long as they're formatted correctly - if applicable you can add a code snippet:
@@ -199,3 +220,107 @@ Make the answers more robust, but not super technical.
     throw new Error(`Error Fetching AI Response: ${error}`);
   }
 }
+
+// Study Mode
+
+const $studyModeBtn = document.getElementById(
+  'study-mode-btn',
+) as HTMLButtonElement;
+$studyModeBtn.addEventListener('click', enterStudyMode);
+
+function enterStudyMode(): any {
+  setActiveNavButton('study-mode-btn');
+  document.querySelector('.input-container')?.classList.add('hidden');
+  document.querySelector('.flashcard-gen-box')?.classList.add('hidden');
+  document.querySelector('#study-mode-container')?.classList.remove('hidden');
+
+  loadFlashcards();
+  displayFlashcard(0);
+}
+
+// Exit Study Mode
+document.getElementById('generate-btn')?.addEventListener('click', () => {
+  setActiveNavButton('generate-btn');
+  document.querySelector('.input-container')?.classList.remove('hidden');
+  document.querySelector('.flashcard-gen-box')?.classList.remove('hidden');
+  document.querySelector('#study-mode-container')?.classList.add('hidden');
+});
+
+let savedFlashcards: { question: string; answer: string }[] = [];
+
+// Load from Local - Need to rewrite not using disabled.
+function loadFlashcards(): any {
+  const storedCards = localStorage.getItem('flashcards');
+  savedFlashcards = storedCards ? JSON.parse(storedCards) : [];
+
+  const $studyQuestion = document.getElementById(
+    'study-question',
+  ) as HTMLElement;
+  const $showAnswerBtn = document.getElementById(
+    'show-answer-btn',
+  ) as HTMLButtonElement;
+  const $nextBtn = document.getElementById('next-btn') as HTMLButtonElement;
+
+  if (savedFlashcards.length === 0) {
+    $studyQuestion.innerText = 'No flashcards found!';
+    $showAnswerBtn.classList.add('hidden');
+    $nextBtn.classList.add('hidden');
+  } else {
+    $showAnswerBtn.classList.remove('hidden');
+    $nextBtn.classList.remove('hidden');
+    showFlashcard(0);
+  }
+}
+
+// show flash card - may want to rewrite.
+function showFlashcard(index: number): any {
+  document.getElementById('study-question')!.innerText =
+    savedFlashcards[index].question;
+  document.getElementById('study-answer')!.innerText =
+    savedFlashcards[index].answer;
+  document.getElementById('study-answer')!.classList.add('hidden');
+}
+
+function displayFlashcard(index: number): any {
+  const studyCard = document.getElementById('study-mode-card') as HTMLElement;
+  const studyQuestion = studyCard.querySelector(
+    '.flashcard-title',
+  ) as HTMLElement;
+  const studyAnswer = studyCard.querySelector(
+    '.flashcard-content',
+  ) as HTMLElement;
+
+  if (savedFlashcards.length === 0) {
+    studyQuestion.innerText = 'No flashcards available.';
+    studyAnswer.innerText = '';
+    return;
+  }
+
+  const flashcard = savedFlashcards[index];
+  studyQuestion.innerText = flashcard.question;
+  studyAnswer.classList.add('hidden');
+}
+
+document.getElementById('show-answer-btn')?.addEventListener('click', () => {
+  const $studyAnswer = document.getElementById('study-answer') as HTMLElement;
+  $studyAnswer.classList.remove('hidden');
+});
+
+let studyIndex = 0;
+
+document.getElementById('next-btn')?.addEventListener('click', () => {
+  if (savedFlashcards.length === 0) return;
+
+  studyIndex = (studyIndex + 1) % savedFlashcards.length;
+  showFlashcard(studyIndex);
+});
+
+// Edit Deck
+
+document.getElementById('edit-deck-btn')?.addEventListener('click', () => {
+  setActiveNavButton('edit-deck-btn');
+  document.querySelector('.input-container')?.classList.add('hidden');
+  document.querySelector('.flashcard-gen-box')?.classList.add('hidden');
+  document.querySelector('#study-mode-container')?.classList.add('hidden');
+  document.querySelector('#edit-deck-container')?.classList.remove('hidden');
+});
