@@ -39,6 +39,10 @@
   max-width: 800px;
 }
 
+.hidden {
+  display: none;
+}
+
 /* Generate */
 .input-box {
   padding: 10px;
@@ -77,7 +81,7 @@
   border-radius: 10px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
   border: 2px solid #ccc;
-  text-align: left;
+  text-align: center;
 }
 
 .flashcard-title {
@@ -128,10 +132,6 @@
   background-color: #4a3c91;
 }
 
-.hidden {
-  display: none;
-}
-
 .edit-input {
   width: 100%;
   padding: 8px;
@@ -147,56 +147,11 @@
   margin-top: 2rem;
 }
 
-/* Moved these items to Issue #2 saving for now */
-#saved-flashcards-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+#study-mode-container {
+  width: 800px;
+}
+
+.expanded-input {
   width: 100%;
-  max-width: 800px;
-}
-
-.saved-flashcard {
-  background: #fff;
-  border-radius: 10px;
-  margin: 10px 0;
-  padding: 10px;
-  border: 1px solid #ddd;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 800px;
-}
-
-.flashcard-summary {
-  padding: 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.flashcard-summary::after {
-  content: '▼';
-}
-
-details[open] .flashcard-summary::after {
-  content: '▲';
-}
-
-.saved-flashcard p {
-  margin: 10px 0;
-  padding: 5px;
-  font-size: 14px;
-  color: #333;
-}
-
-details {
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-details[open] {
-  padding-bottom: 10px;
+  height: 80px;
 }

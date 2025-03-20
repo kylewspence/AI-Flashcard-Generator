@@ -1,3 +1,10 @@
+import {
+  getFlashcards,
+  saveFlashcards,
+  addFlashcard,
+  Flashcard,
+} from './data.js';
+
 // API Key Variables
 const key1 = 'sk-proj-7vyDO4PFulA9RzJM_KxUIZtVTUOmdlNR7Oy8D';
 const key2 = 'q1a8rQtNWWnRJ3rRtrmGJu808dnJveOjer0dVT3BlbkFJI';
@@ -73,14 +80,13 @@ function handleEdit(target: HTMLElement): void {
   $editAnswerInput.value = $answerElem.innerText;
 
   // Expand Input Boxes
-  $editQuestionInput.style.width = '100%';
-  $editAnswerInput.style.width = '100%';
-  $editAnswerInput.style.height = '80px';
+  $editQuestionInput.classList.add('expanded-input');
+  $editAnswerInput.classList.add('expanded-input');
 }
 
 // Save Button
 
-function handleSave(target: HTMLElement): void {
+function handleSave(target: HTMLElement): any {
   const $flashcard = target.closest('.flashcard') as HTMLElement;
   if (!$flashcard) return;
 
@@ -113,6 +119,8 @@ function handleSave(target: HTMLElement): void {
   target.classList.add('hidden');
   $editBtn.classList.remove('hidden');
   $addToDeckBtn.classList.remove('hidden');
+
+  saveFlashcards(savedFlashcards);
 }
 
 // Add To Deck Button
@@ -127,14 +135,12 @@ function handleAddToDeck(target: HTMLElement): void {
   if (!$question || !$answer)
     throw new Error('Could not find either question or answer.');
 
-  // Retrieve existing deck or initialize
-  const savedDeck = JSON.parse(localStorage.getItem('flashcards') || '[]');
+  const newFlashcard: Flashcard = {
+    question: $question.innerText,
+    answer: $answer.innerText,
+  };
 
-  // Add new card
-  savedDeck.push({ question: $question.innerText, answer: $answer.innerText });
-
-  // Save back to localStorage
-  localStorage.setItem('flashcards', JSON.stringify(savedDeck));
+  addFlashcard(newFlashcard);
 }
 
 // Fetch, API, Prompt
@@ -248,10 +254,9 @@ document.getElementById('generate-btn')?.addEventListener('click', () => {
 
 let savedFlashcards: { question: string; answer: string }[] = [];
 
-// Load from Local - Need to rewrite not using disabled.
-function loadFlashcards(): any {
-  const storedCards = localStorage.getItem('flashcards');
-  savedFlashcards = storedCards ? JSON.parse(storedCards) : [];
+// Load from Local
+function loadFlashcards(): void {
+  savedFlashcards = getFlashcards();
 
   const $studyQuestion = document.getElementById(
     'study-question',
@@ -272,7 +277,7 @@ function loadFlashcards(): any {
   }
 }
 
-// show flash card - may want to rewrite.
+// show flash card
 function showFlashcard(index: number): any {
   document.getElementById('study-question')!.innerText =
     savedFlashcards[index].question;
@@ -282,7 +287,9 @@ function showFlashcard(index: number): any {
 }
 
 function displayFlashcard(index: number): any {
-  const studyCard = document.getElementById('study-mode-card') as HTMLElement;
+  const studyCard = document.getElementById(
+    'study-mode-container',
+  ) as HTMLElement;
   const studyQuestion = studyCard.querySelector(
     '.flashcard-title',
   ) as HTMLElement;
