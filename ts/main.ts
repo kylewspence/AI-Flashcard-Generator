@@ -1,10 +1,3 @@
-import {
-  getFlashcards,
-  saveFlashcards,
-  addFlashcard,
-  Flashcard,
-} from './data.js';
-
 // API Key Variables
 const key1 = 'sk-proj-7vyDO4PFulA9RzJM_KxUIZtVTUOmdlNR7Oy8D';
 const key2 = 'q1a8rQtNWWnRJ3rRtrmGJu808dnJveOjer0dVT3BlbkFJI';
