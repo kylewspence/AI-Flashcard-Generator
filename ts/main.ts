@@ -7,6 +7,9 @@ const key4 = 'vzFw4qYu-CcieFlcaznL-43CIA';
 // DOM Cache
 const $generateBtn = document.getElementById('search-btn') as HTMLButtonElement;
 const $inputField = document.getElementById('user-input') as HTMLInputElement;
+const $inputContainer = document.querySelector('.input-container');
+const $flashcardGenBox = document.querySelector('.flashcard-gen-box');
+const $studyModeContainer = document.querySelector('#study-mode-container');
 
 // Generate Listener
 document.addEventListener('DOMContentLoaded', () => {
@@ -229,9 +232,9 @@ $studyModeBtn.addEventListener('click', enterStudyMode);
 
 function enterStudyMode(): any {
   setActiveNavButton('study-mode-btn');
-  document.querySelector('.input-container')?.classList.add('hidden');
-  document.querySelector('.flashcard-gen-box')?.classList.add('hidden');
-  document.querySelector('#study-mode-container')?.classList.remove('hidden');
+  $inputContainer?.classList.add('hidden');
+  $flashcardGenBox?.classList.add('hidden');
+  $studyModeContainer?.classList.remove('hidden');
 
   loadFlashcards();
   displayFlashcard(0);
@@ -240,9 +243,9 @@ function enterStudyMode(): any {
 // Exit Study Mode
 document.getElementById('generate-btn')?.addEventListener('click', () => {
   setActiveNavButton('generate-btn');
-  document.querySelector('.input-container')?.classList.remove('hidden');
-  document.querySelector('.flashcard-gen-box')?.classList.remove('hidden');
-  document.querySelector('#study-mode-container')?.classList.add('hidden');
+  $inputContainer?.classList.remove('hidden');
+  $flashcardGenBox?.classList.remove('hidden');
+  $studyModeContainer?.classList.add('hidden');
 });
 
 let savedFlashcards: { question: string; answer: string }[] = [];
