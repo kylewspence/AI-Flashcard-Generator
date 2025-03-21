@@ -1,4 +1,4 @@
-'use strict';
+import { getFlashcards, saveFlashcards, addFlashcard } from './data.js';
 // API Key Variables
 const key1 = 'sk-proj-7vyDO4PFulA9RzJM_KxUIZtVTUOmdlNR7Oy8D';
 const key2 = 'q1a8rQtNWWnRJ3rRtrmGJu808dnJveOjer0dVT3BlbkFJI';
@@ -18,6 +18,15 @@ document.addEventListener('click', (event) => {
   if (target.classList.contains('save-btn')) handleSave(target);
   if (target.classList.contains('add-btn')) handleAddToDeck(target);
 });
+// Nav Buttons
+function setActiveNavButton(activeButtonId) {
+  // Remove 'active' from all nav buttons
+  document.querySelectorAll('.nav-btn').forEach((btn) => {
+    btn.classList.remove('active');
+  });
+  // Add 'active' to the clicked button
+  document.getElementById(activeButtonId)?.classList.add('active');
+}
 // Edit Button
 function handleEdit(target) {
   const $flashcard = target.closest('.flashcard');
@@ -40,9 +49,8 @@ function handleEdit(target) {
   $editQuestionInput.value = $questionElem.innerText;
   $editAnswerInput.value = $answerElem.innerText;
   // Expand Input Boxes
-  $editQuestionInput.style.width = '100%';
-  $editAnswerInput.style.width = '100%';
-  $editAnswerInput.style.height = '80px';
+  $editQuestionInput.classList.add('expanded-input');
+  $editAnswerInput.classList.add('expanded-input');
 }
 // Save Button
 function handleSave(target) {
@@ -65,6 +73,7 @@ function handleSave(target) {
   target.classList.add('hidden');
   $editBtn.classList.remove('hidden');
   $addToDeckBtn.classList.remove('hidden');
+  saveFlashcards(savedFlashcards);
 }
 // Add To Deck Button
 function handleAddToDeck(target) {
@@ -74,12 +83,11 @@ function handleAddToDeck(target) {
   const $answer = $flashcard.querySelector('.flashcard-content');
   if (!$question || !$answer)
     throw new Error('Could not find either question or answer.');
-  // Retrieve existing deck or initialize
-  const savedDeck = JSON.parse(localStorage.getItem('flashcards') || '[]');
-  // Add new card
-  savedDeck.push({ question: $question.innerText, answer: $answer.innerText });
-  // Save back to localStorage
-  localStorage.setItem('flashcards', JSON.stringify(savedDeck));
+  const newFlashcard = {
+    question: $question.innerText,
+    answer: $answer.innerText,
+  };
+  addFlashcard(newFlashcard);
 }
 // Fetch, API, Prompt
 async function generateFlashcard() {
@@ -94,6 +102,15 @@ Please consider the use of flash cards and how a human would hold a paper card w
 Make the answers more robust, but not super technical.
 
 ⚠️ IMPORTANT:
+ - If the answer includes code, format it clearly with line breaks.
+ - Example of correct formatting:
+
+   Question: "How do you use forEach in JavaScript?"
+   Answer:
+   let numbers = [1, 2, 3, 4, 5];
+   numbers.forEach(function(number) {
+       console.log(number);
+   });
  - DO NOT include any explanations, pretext, or extra text.
  - ONLY return a JSON array with this format - you can use your own judgment for
    the questions and answers as long as they're formatted correctly - if applicable you can add a code snippet:
@@ -143,3 +160,77 @@ Make the answers more robust, but not super technical.
     throw new Error(`Error Fetching AI Response: ${error}`);
   }
 }
+// Study Mode
+const $studyModeBtn = document.getElementById('study-mode-btn');
+$studyModeBtn.addEventListener('click', enterStudyMode);
+function enterStudyMode() {
+  setActiveNavButton('study-mode-btn');
+  document.querySelector('.input-container')?.classList.add('hidden');
+  document.querySelector('.flashcard-gen-box')?.classList.add('hidden');
+  document.querySelector('#study-mode-container')?.classList.remove('hidden');
+  loadFlashcards();
+  displayFlashcard(0);
+}
+// Exit Study Mode
+document.getElementById('generate-btn')?.addEventListener('click', () => {
+  setActiveNavButton('generate-btn');
+  document.querySelector('.input-container')?.classList.remove('hidden');
+  document.querySelector('.flashcard-gen-box')?.classList.remove('hidden');
+  document.querySelector('#study-mode-container')?.classList.add('hidden');
+});
+let savedFlashcards = [];
+// Load from Local
+function loadFlashcards() {
+  savedFlashcards = getFlashcards();
+  const $studyQuestion = document.getElementById('study-question');
+  const $showAnswerBtn = document.getElementById('show-answer-btn');
+  const $nextBtn = document.getElementById('next-btn');
+  if (savedFlashcards.length === 0) {
+    $studyQuestion.innerText = 'No flashcards found!';
+    $showAnswerBtn.classList.add('hidden');
+    $nextBtn.classList.add('hidden');
+  } else {
+    $showAnswerBtn.classList.remove('hidden');
+    $nextBtn.classList.remove('hidden');
+    showFlashcard(0);
+  }
+}
+// show flash card
+function showFlashcard(index) {
+  document.getElementById('study-question').innerText =
+    savedFlashcards[index].question;
+  document.getElementById('study-answer').innerText =
+    savedFlashcards[index].answer;
+  document.getElementById('study-answer').classList.add('hidden');
+}
+function displayFlashcard(index) {
+  const studyCard = document.getElementById('study-mode-container');
+  const studyQuestion = studyCard.querySelector('.flashcard-title');
+  const studyAnswer = studyCard.querySelector('.flashcard-content');
+  if (savedFlashcards.length === 0) {
+    studyQuestion.innerText = 'No flashcards available.';
+    studyAnswer.innerText = '';
+    return;
+  }
+  const flashcard = savedFlashcards[index];
+  studyQuestion.innerText = flashcard.question;
+  studyAnswer.classList.add('hidden');
+}
+document.getElementById('show-answer-btn')?.addEventListener('click', () => {
+  const $studyAnswer = document.getElementById('study-answer');
+  $studyAnswer.classList.remove('hidden');
+});
+let studyIndex = 0;
+document.getElementById('next-btn')?.addEventListener('click', () => {
+  if (savedFlashcards.length === 0) return;
+  studyIndex = (studyIndex + 1) % savedFlashcards.length;
+  showFlashcard(studyIndex);
+});
+// Edit Deck
+document.getElementById('edit-deck-btn')?.addEventListener('click', () => {
+  setActiveNavButton('edit-deck-btn');
+  document.querySelector('.input-container')?.classList.add('hidden');
+  document.querySelector('.flashcard-gen-box')?.classList.add('hidden');
+  document.querySelector('#study-mode-container')?.classList.add('hidden');
+  document.querySelector('#edit-deck-container')?.classList.remove('hidden');
+});

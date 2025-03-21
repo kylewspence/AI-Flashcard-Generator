@@ -24,47 +24,65 @@
           placeholder="Generate New" />
         <button id="search-btn" class="btn">Generate</button>
       </div>
+      <div class="flashcard-gen-box">
+        <div class="flashcard-container">
+          <div class="flashcard" data-index="0">
+            <p class="flashcard-title">Question:</p>
+            <p class="flashcard-content">Generated Answer</p>
 
-      <div class="flashcard-container">
-        <div class="flashcard" data-index="0">
-          <p class="flashcard-title">Question:</p>
-          <p class="flashcard-content">Generated Answer</p>
+            <input type="text" class="edit-question hidden" />
+            <input type="text" class="edit-answer hidden" />
+            <button class="edit-btn">Edit</button>
+            <button class="save-btn hidden">Save</button>
+            <button class="add-btn">Add To Deck</button>
+          </div>
+        </div>
 
-          <input type="text" class="edit-question hidden" />
-          <input type="text" class="edit-answer hidden" />
-          <button class="edit-btn">Edit</button>
-          <button class="save-btn hidden">Save</button>
-          <button class="add-btn">Add To Deck</button>
+        <div class="flashcard-container">
+          <div class="flashcard" data-index="1">
+            <p class="flashcard-title">Question:</p>
+            <p class="flashcard-content">Generated Answer</p>
+
+            <input type="text" class="edit-question hidden" />
+            <input type="text" class="edit-answer hidden" />
+            <button class="edit-btn">Edit</button>
+            <button class="save-btn hidden">Save</button>
+            <button class="add-btn">Add To Deck</button>
+          </div>
+        </div>
+
+        <div class="flashcard-container">
+          <div class="flashcard" data-index="2">
+            <p class="flashcard-title">Question:</p>
+            <p class="flashcard-content">Generated Answer</p>
+
+            <input type="text" class="edit-question hidden" />
+            <input type="text" class="edit-answer hidden" />
+            <button class="edit-btn">Edit</button>
+            <button class="save-btn hidden">Save</button>
+            <button class="add-btn">Add To Deck</button>
+          </div>
         </div>
       </div>
 
-      <div class="flashcard-container">
-        <div class="flashcard" data-index="1">
-          <p class="flashcard-title">Question:</p>
-          <p class="flashcard-content">Generated Answer</p>
-
-          <input type="text" class="edit-question hidden" />
-          <input type="text" class="edit-answer hidden" />
-          <button class="edit-btn">Edit</button>
-          <button class="save-btn hidden">Save</button>
-          <button class="add-btn">Add To Deck</button>
+      <div id="study-mode-container" class="hidden">
+        <div class="flashcard-container">
+          <div class="flashcard">
+            <p class="flashcard-title" id="study-question">
+              Question will appear here
+            </p>
+            <p class="flashcard-content hidden" id="study-answer">
+              Click 'Show Answer'
+            </p>
+          </div>
         </div>
-      </div>
-
-      <div class="flashcard-container">
-        <div class="flashcard" data-index="2">
-          <p class="flashcard-title">Question:</p>
-          <p class="flashcard-content">Generated Answer</p>
-
-          <input type="text" class="edit-question hidden" />
-          <input type="text" class="edit-answer hidden" />
-          <button class="edit-btn">Edit</button>
-          <button class="save-btn hidden">Save</button>
-          <button class="add-btn">Add To Deck</button>
+        <div class="study-mode-btns">
+          <button class="btn" id="show-answer-btn">Show Answer</button>
+          <button class="btn" id="next-btn">Next</button>
         </div>
       </div>
     </main>
-    <script src="js/data.js"></script>
-    <script src="js/main.js"></script>
+    <script type="module" src="js/data.js"></script>
+    <script type="module" src="js/main.js"></script>
   </body>
 </html>
