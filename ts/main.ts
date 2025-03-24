@@ -182,31 +182,38 @@ function handleAddToDeck(target: HTMLElement): void {
 
 async function generateFlashcard(): Promise<void> {
   const userInput = $inputField.value;
+
   if (!userInput) throw new Error(`No User Input`);
 
-  const prompt = `Generate 3 unique flashcards about: ${userInput}
-Each card should include:
-- "question"
-- "answer"
-- "pokemon" (name of the Pokémon)
-- "images" (array of 3–5 image URLs of that Pokémon from online sources — use real links to .png or .jpg)
+  const prompt = `Generate 3 unique flashcards about the topic "${userInput}".
+Each flashcard should focus on a different Pokémon.
 
-Example format:
+For each flashcard, return:
+- a question
+- an answer
+- the Pokémon's name
+- 5 visually distinct image URLs that help a user recognize that Pokémon (e.g. official sprites, anime stills, fan art, trading cards, etc.)
+
+
+Format the output strictly as a raw JSON array like this:
 
 [
   {
-    "question": "What type is Bulbasaur?",
-    "answer": "Bulbasaur is a dual-type Grass/Poison Pokémon.",
-    "pokemon": "bulbasaur",
+    "question": "What type is Pikachu?",
+    "answer": "Pikachu is an Electric-type Pokémon.",
+    "pokemon": "Pikachu",
     "images": [
-      "https://...",
-      "https://...",
-      "https://..."
+      "https://example.com/image1.jpg",
+      "https://example.com/image2.jpg",
+      "https://example.com/image3.jpg",
+      "https://example.com/image4.jpg",
+      "https://example.com/image5.jpg"
     ]
-  }
+  },
+  ...
 ]
 
-Only return raw JSON in the format above.`;
+Only return the JSON array. No explanations or extra text.`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -226,6 +233,10 @@ Only return raw JSON in the format above.`;
     const data = await response.json();
 
     const flashcards = JSON.parse(data.choices[0].message.content);
+    console.log(
+      '🖼️ Image URLs:',
+      flashcards.map((f) => f.images),
+    );
 
     for (let index = 0; index < flashcards.length; index++) {
       const flashcard = flashcards[index];
@@ -236,6 +247,21 @@ Only return raw JSON in the format above.`;
       const pokeData = await pokeRes.json();
       const imageUrl = pokeData.sprites.front_default;
       const altImageUrl = pokeData.sprites.front_shiny;
+
+      const images: string[] = [
+        pokeData.sprites.front_default,
+        pokeData.sprites.back_default,
+        pokeData.sprites.front_shiny,
+        pokeData.sprites.other['official-artwork'].front_default,
+        pokeData.sprites.other.dream_world.front_default,
+      ];
+
+      const newFlashcard: Flashcard = {
+        question: flashcard.question,
+        answer: flashcard.answer,
+        pokemon: flashcard.pokemon,
+        images: images.filter(Boolean), // removes any null values
+      };
 
       const $flashcard = document.querySelector(
         `.flashcard[data-index="${index}"]`,
@@ -251,6 +277,12 @@ Only return raw JSON in the format above.`;
         const $imageElem = $flashcard.querySelector(
           '.pokemon-img',
         ) as HTMLImageElement;
+        const imageElem = $flashcard.querySelector(
+          '.pokemon-img',
+        ) as HTMLImageElement;
+        const imageContainer = $flashcard.querySelector(
+          '.image-options',
+        ) as HTMLElement;
 
         $questionElem.innerText = flashcard.question;
         $answerElem.innerText = flashcard.answer;
@@ -258,6 +290,62 @@ Only return raw JSON in the format above.`;
         $imageElem.classList.remove('hidden');
         $flashcard.setAttribute('data-image', imageUrl);
         $flashcard.setAttribute('data-alt-image', altImageUrl);
+
+        imageElem.classList.remove('hidden');
+
+        imageContainer.innerHTML = ''; // Clear previous images
+
+        flashcard.images.forEach((imgUrl: string) => {
+          const img = document.createElement('img');
+          img.src = imgUrl;
+          img.classList.add('pokemon-option-img');
+          imageContainer.appendChild(img);
+        });
+
+        for (const flashcard of flashcards) {
+          const pokemonName = flashcard.pokemon.toLowerCase();
+
+          const imagePrompt = `
+   Give me 5 real working image URLs for the Pokémon "${pokemonName}". Only use URLs from trusted sources like:
+- https://assets.pokemon.com
+- https://archives.bulbagarden.net
+- https://img.pokemondb.net
+
+Do not return any DeviantArt, Pinterest, or wixmp URLs.
+Only include images from sources like assets.pokemon.com, cdn.bulbagarden.net, or pokemonpets.com.
+Do not include links from nocookie.net or any site that may not support hotlinking.
+Return a plain JSON array of 5 image URLs.
+    Return ONLY a JSON array like:
+    [
+      "https://...",
+      "https://...",
+      ...
+    ]
+  `;
+
+          const imageResponse = await fetch(
+            'https://api.openai.com/v1/chat/completions',
+            {
+              method: 'POST',
+              headers: {
+                'Content-type': 'application/json',
+                Authorization: `Bearer ${key1}${key2}${key3}${key4}`,
+              },
+              body: JSON.stringify({
+                model: 'gpt-3.5-turbo',
+                messages: [{ role: 'user', content: imagePrompt }],
+                temperature: 0.7,
+                max_tokens: 300,
+              }),
+            },
+          );
+
+          const imageData = await imageResponse.json();
+          const images = JSON.parse(imageData.choices[0].message.content);
+
+          // ⬇️ Attach it to the flashcard
+          flashcard.images = images;
+        }
       }
     }
   } catch (error) {
@@ -327,12 +415,12 @@ function showFlashcard(index: number): void {
   answerElem.innerText = flashcard.answer;
   answerElem.classList.add('hidden');
 
-  if (flashcard.image) {
-    imageElem.src = flashcard.image;
-    imageElem.classList.add('hidden'); // start hidden
+  if (flashcard.images && flashcard.images.length > 0) {
+    imageElem.src = flashcard.images[0];
+    imageElem.classList.add('hidden'); // hidden until user clicks "Show Answer"
   } else {
     imageElem.src = '';
-    imageElem.classList.add('hidden'); // also hide if missing
+    imageElem.classList.add('hidden');
   }
 }
 
