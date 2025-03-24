@@ -1,4 +1,6 @@
-import { getFlashcards, saveFlashcards, addFlashcard } from './data.js';
+'use strict';
+console.log('✅ Script loaded');
+console.log('✅ addFlashcard is:', typeof addFlashcard);
 // API Key Variables
 const key1 = 'sk-proj-7vyDO4PFulA9RzJM_KxUIZtVTUOmdlNR7Oy8D';
 const key2 = 'q1a8rQtNWWnRJ3rRtrmGJu808dnJveOjer0dVT3BlbkFJI';
@@ -7,6 +9,9 @@ const key4 = 'vzFw4qYu-CcieFlcaznL-43CIA';
 // DOM Cache
 const $generateBtn = document.getElementById('search-btn');
 const $inputField = document.getElementById('user-input');
+const $inputContainer = document.querySelector('.input-container');
+const $flashcardGenBox = document.querySelector('.flashcard-gen-box');
+const $studyModeContainer = document.querySelector('#study-mode-container');
 // Generate Listener
 document.addEventListener('DOMContentLoaded', () => {
   $generateBtn?.addEventListener('click', generateFlashcard);
@@ -27,6 +32,13 @@ function setActiveNavButton(activeButtonId) {
   // Add 'active' to the clicked button
   document.getElementById(activeButtonId)?.classList.add('active');
 }
+// get name from URL
+function extractPokemonNameFromImageUrl(url) {
+  // Split by '/' to isolate the file name, then remove the extension
+  const parts = url.split('/');
+  const fileName = parts[parts.length - 1]; // e.g., "pikachu.png"
+  return fileName.replace('.png', '');
+}
 // Edit Button
 function handleEdit(target) {
   const $flashcard = target.closest('.flashcard');
@@ -37,11 +49,17 @@ function handleEdit(target) {
   const $editAnswerInput = $flashcard.querySelector('.edit-answer');
   const $saveEditBtn = $flashcard.querySelector('.save-btn');
   const $addToDeckBtn = $flashcard.querySelector('.add-btn');
+  const $editImageInput = $flashcard.querySelector('.edit-image');
+  if ($editImageInput) {
+    const imageUrl = $flashcard.getAttribute('data-image') || '';
+    $editImageInput.value = extractPokemonNameFromImageUrl(imageUrl);
+  }
   // Toggle hidden
   $questionElem.classList.add('hidden');
   $answerElem.classList.add('hidden');
   $editQuestionInput.classList.remove('hidden');
   $editAnswerInput.classList.remove('hidden');
+  $editImageInput?.classList.remove('hidden');
   target.classList.add('hidden');
   $saveEditBtn.classList.remove('hidden');
   $addToDeckBtn.classList.add('hidden');
@@ -53,7 +71,7 @@ function handleEdit(target) {
   $editAnswerInput.classList.add('expanded-input');
 }
 // Save Button
-function handleSave(target) {
+async function handleSave(target) {
   const $flashcard = target.closest('.flashcard');
   if (!$flashcard) return;
   const $questionElem = $flashcard.querySelector('.flashcard-title');
@@ -62,6 +80,7 @@ function handleSave(target) {
   const $editAnswerInput = $flashcard.querySelector('.edit-answer');
   const $editBtn = $flashcard.querySelector('.edit-btn');
   const $addToDeckBtn = $flashcard.querySelector('.add-btn');
+  const $editImageInput = $flashcard.querySelector('.edit-image');
   // Save new values
   $questionElem.innerText = $editQuestionInput.value;
   $answerElem.innerText = $editAnswerInput.value;
@@ -73,6 +92,15 @@ function handleSave(target) {
   target.classList.add('hidden');
   $editBtn.classList.remove('hidden');
   $addToDeckBtn.classList.remove('hidden');
+  $editImageInput.classList.add('hidden');
+  const newPokemonName = $editImageInput.value.toLowerCase().trim();
+  const pokeRes = await fetch(
+    `https://pokeapi.co/api/v2/pokemon/${newPokemonName}`,
+  );
+  const pokeData = await pokeRes.json();
+  const newImageUrl = pokeData.sprites.front_default;
+  const $imageElem = $flashcard.querySelector('.pokemon-img');
+  $imageElem.src = newImageUrl;
   saveFlashcards(savedFlashcards);
 }
 // Add To Deck Button
@@ -83,9 +111,11 @@ function handleAddToDeck(target) {
   const $answer = $flashcard.querySelector('.flashcard-content');
   if (!$question || !$answer)
     throw new Error('Could not find either question or answer.');
+  const $image = $flashcard.querySelector('.pokemon-img');
   const newFlashcard = {
     question: $question.innerText,
     answer: $answer.innerText,
+    image: $image?.src || '',
   };
   addFlashcard(newFlashcard);
 }
@@ -93,42 +123,29 @@ function handleAddToDeck(target) {
 async function generateFlashcard() {
   const userInput = $inputField.value;
   if (!userInput) throw new Error(`No User Input`);
-  const prompt = `Generate exactly 3 unique flashcards about: "${userInput}".
-Each flashcard should cover a different aspect of the topic.
-For instance, this will mostly be used for generating flash cards about concepts relating to coding.
-Consider things like creating a card for syntax or an example of how it's used.
-You're helping students learn, so responses should be useful, varied, and include code examples where relevant.
-Please consider the use of flash cards and how a human would hold a paper card with a question on one side, then need to be able to memorize what's on the other side.
-Make the answers more robust, but not super technical.
+  const prompt = `Generate 3 unique flashcards about: ${userInput}
+Each card should include:
+- "question"
+- "answer"
+- "pokemon" (name of the Pokémon)
+- "images" (array of 3–5 image URLs of that Pokémon from online sources — use real links to .png or .jpg)
 
-⚠️ IMPORTANT:
- - If the answer includes code, format it clearly with line breaks.
- - Example of correct formatting:
+Example format:
 
-   Question: "How do you use forEach in JavaScript?"
-   Answer:
-   let numbers = [1, 2, 3, 4, 5];
-   numbers.forEach(function(number) {
-       console.log(number);
-   });
- - DO NOT include any explanations, pretext, or extra text.
- - ONLY return a JSON array with this format - you can use your own judgment for
-   the questions and answers as long as they're formatted correctly - if applicable you can add a code snippet:
+[
+  {
+    "question": "What type is Bulbasaur?",
+    "answer": "Bulbasaur is a dual-type Grass/Poison Pokémon.",
+    "pokemon": "bulbasaur",
+    "images": [
+      "https://...",
+      "https://...",
+      "https://..."
+    ]
+  }
+]
 
- [
-   {
-     "question":
-     "answer":
-   },
-   {
-     "question":
-     "answer":
-   },
-   {
-     "question":
-     "answer":
-   }
- ]`;
+Only return raw JSON in the format above.`;
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -145,17 +162,30 @@ Make the answers more robust, but not super technical.
     });
     const data = await response.json();
     const flashcards = JSON.parse(data.choices[0].message.content);
-    flashcards.forEach((flashcard, index) => {
+    for (let index = 0; index < flashcards.length; index++) {
+      const flashcard = flashcards[index];
+      const pokemonName = flashcard.pokemon.toLowerCase();
+      const pokeRes = await fetch(
+        `https://pokeapi.co/api/v2/pokemon/${pokemonName}`,
+      );
+      const pokeData = await pokeRes.json();
+      const imageUrl = pokeData.sprites.front_default;
+      const altImageUrl = pokeData.sprites.front_shiny;
       const $flashcard = document.querySelector(
         `.flashcard[data-index="${index}"]`,
       );
       if ($flashcard) {
         const $questionElem = $flashcard.querySelector('.flashcard-title');
         const $answerElem = $flashcard.querySelector('.flashcard-content');
+        const $imageElem = $flashcard.querySelector('.pokemon-img');
         $questionElem.innerText = flashcard.question;
         $answerElem.innerText = flashcard.answer;
+        $imageElem.src = imageUrl;
+        $imageElem.classList.remove('hidden');
+        $flashcard.setAttribute('data-image', imageUrl);
+        $flashcard.setAttribute('data-alt-image', altImageUrl);
       }
-    });
+    }
   } catch (error) {
     throw new Error(`Error Fetching AI Response: ${error}`);
   }
@@ -165,18 +195,18 @@ const $studyModeBtn = document.getElementById('study-mode-btn');
 $studyModeBtn.addEventListener('click', enterStudyMode);
 function enterStudyMode() {
   setActiveNavButton('study-mode-btn');
-  document.querySelector('.input-container')?.classList.add('hidden');
-  document.querySelector('.flashcard-gen-box')?.classList.add('hidden');
-  document.querySelector('#study-mode-container')?.classList.remove('hidden');
+  $inputContainer?.classList.add('hidden');
+  $flashcardGenBox?.classList.add('hidden');
+  $studyModeContainer?.classList.remove('hidden');
   loadFlashcards();
-  displayFlashcard(0);
+  showFlashcard(0);
 }
 // Exit Study Mode
 document.getElementById('generate-btn')?.addEventListener('click', () => {
   setActiveNavButton('generate-btn');
-  document.querySelector('.input-container')?.classList.remove('hidden');
-  document.querySelector('.flashcard-gen-box')?.classList.remove('hidden');
-  document.querySelector('#study-mode-container')?.classList.add('hidden');
+  $inputContainer?.classList.remove('hidden');
+  $flashcardGenBox?.classList.remove('hidden');
+  $studyModeContainer?.classList.add('hidden');
 });
 let savedFlashcards = [];
 // Load from Local
@@ -195,30 +225,48 @@ function loadFlashcards() {
     showFlashcard(0);
   }
 }
-// show flash card
+// Study Mode - Updates card from saved. Called on "Next".
 function showFlashcard(index) {
-  document.getElementById('study-question').innerText =
-    savedFlashcards[index].question;
-  document.getElementById('study-answer').innerText =
-    savedFlashcards[index].answer;
-  document.getElementById('study-answer').classList.add('hidden');
-}
-function displayFlashcard(index) {
-  const studyCard = document.getElementById('study-mode-container');
-  const studyQuestion = studyCard.querySelector('.flashcard-title');
-  const studyAnswer = studyCard.querySelector('.flashcard-content');
-  if (savedFlashcards.length === 0) {
-    studyQuestion.innerText = 'No flashcards available.';
-    studyAnswer.innerText = '';
-    return;
-  }
   const flashcard = savedFlashcards[index];
-  studyQuestion.innerText = flashcard.question;
-  studyAnswer.classList.add('hidden');
+  const questionElem = document.getElementById('study-question');
+  const answerElem = document.getElementById('study-answer');
+  const imageElem = document.getElementById('study-image');
+  questionElem.innerText = flashcard.question;
+  answerElem.innerText = flashcard.answer;
+  answerElem.classList.add('hidden');
+  if (flashcard.image) {
+    imageElem.src = flashcard.image;
+    imageElem.classList.add('hidden'); // start hidden
+  } else {
+    imageElem.src = '';
+    imageElem.classList.add('hidden'); // also hide if missing
+  }
 }
+// Study Mode - Unused?
+// function displayFlashcard(index: number): void {
+//   const studyCard = document.getElementById(
+//     'study-mode-container',
+//   ) as HTMLElement;
+//   const studyQuestion = studyCard.querySelector(
+//     '.flashcard-title',
+//   ) as HTMLElement;
+//   const studyAnswer = studyCard.querySelector(
+//     '.flashcard-content',
+//   ) as HTMLElement;
+//   if (savedFlashcards.length === 0) {
+//     studyQuestion.innerText = 'No flashcards available.';
+//     studyAnswer.innerText = '';
+//     return;
+//   }
+//   const flashcard = savedFlashcards[index];
+//   studyQuestion.innerText = flashcard.question;
+//   studyAnswer.classList.add('hidden');
+// }
 document.getElementById('show-answer-btn')?.addEventListener('click', () => {
   const $studyAnswer = document.getElementById('study-answer');
+  const $studyImage = document.getElementById('study-image');
   $studyAnswer.classList.remove('hidden');
+  $studyImage.classList.remove('hidden');
 });
 let studyIndex = 0;
 document.getElementById('next-btn')?.addEventListener('click', () => {
@@ -226,7 +274,7 @@ document.getElementById('next-btn')?.addEventListener('click', () => {
   studyIndex = (studyIndex + 1) % savedFlashcards.length;
   showFlashcard(studyIndex);
 });
-// Edit Deck
+// Edit Mode
 document.getElementById('edit-deck-btn')?.addEventListener('click', () => {
   setActiveNavButton('edit-deck-btn');
   document.querySelector('.input-container')?.classList.add('hidden');
