@@ -192,7 +192,7 @@ Only return the JSON array. No explanations or extra text.`;
                 question: flashcard.question,
                 answer: flashcard.answer,
                 pokemon: flashcard.pokemon,
-                images: images.filter(Boolean), // removes any null values
+                images,
             };
             const $flashcard = document.querySelector(`.flashcard[data-index="${index}"]`);
             if ($flashcard) {
@@ -215,43 +215,6 @@ Only return the JSON array. No explanations or extra text.`;
                     img.classList.add('pokemon-option-img');
                     imageContainer.appendChild(img);
                 });
-                for (const flashcard of flashcards) {
-                    const pokemonName = flashcard.pokemon.toLowerCase();
-                    const imagePrompt = `
-   Give me 5 real working image URLs for the Pokémon "${pokemonName}". Only use URLs from trusted sources like:
-- https://assets.pokemon.com
-- https://archives.bulbagarden.net
-- https://img.pokemondb.net
-
-Do not return any DeviantArt, Pinterest, or wixmp URLs.
-Only include images from sources like assets.pokemon.com, cdn.bulbagarden.net, or pokemonpets.com.
-Do not include links from nocookie.net or any site that may not support hotlinking.
-Return a plain JSON array of 5 image URLs.
-    Return ONLY a JSON array like:
-    [
-      "https://...",
-      "https://...",
-      ...
-    ]
-  `;
-                    const imageResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-                        method: 'POST',
-                        headers: {
-                            'Content-type': 'application/json',
-                            Authorization: `Bearer ${key1}${key2}${key3}${key4}`,
-                        },
-                        body: JSON.stringify({
-                            model: 'gpt-3.5-turbo',
-                            messages: [{ role: 'user', content: imagePrompt }],
-                            temperature: 0.7,
-                            max_tokens: 300,
-                        }),
-                    });
-                    const imageData = await imageResponse.json();
-                    const images = JSON.parse(imageData.choices[0].message.content);
-                    // ⬇️ Attach it to the flashcard
-                    flashcard.images = images;
-                }
             }
         }
     }
