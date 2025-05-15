@@ -12,8 +12,8 @@ Designed for students, lifelong learners, and anyone who wants to study smarter 
 - ✅ Editable questions and answers  
 - ✅ Save custom decks locally in your browser  
 - ✅ Study mode with card flipping and progress tracking  
-- ✅ Clean, responsive UI built for focus and simplicity  
-
+- ✅ Clean, responsive UI built for focus and simplicity
+- Edit Tab currently under construction.
 ---
 
 ## 🛠️ Tech Stack
